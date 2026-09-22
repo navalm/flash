@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>flash · speed test</title>
+<link rel="stylesheet" href="{{.BasePath}}/static/app.css">
+<script type="module" src="{{.BasePath}}/static/ui.js"></script>
+</head>
+<body data-base-path="{{.BasePath}}" data-server-name="{{.ServerName}}" data-turn-enabled="{{.TurnEnabled}}">
+<main class="wrap">
+  <header class="top">
+    <div>
+      <h1>flash</h1>
+      <p class="sub">Self-hosted speed test · server <strong id="server-name">{{.ServerName}}</strong></p>
+    </div>
+    <div class="controls">
+      <label class="select">
+        <span>Test against</span>
+        <select id="endpoint">
+          <option value="this">This server</option>
+          <option value="cloudflare">Cloudflare (public)</option>
+          <option value="custom">Custom URL…</option>
+        </select>
+      </label>
+      <button id="start" class="primary" type="button">Start test</button>
+    </div>
+  </header>
+
+  <section class="progress" aria-live="polite">
+    <div class="bar"><div id="bar-fill"></div></div>
+    <p id="status">Press Start, Enter, or Space to begin. Esc aborts.</p>
+  </section>
+
+  <section class="hero-grid">
+    <article class="hero">
+      <span class="label">Download</span>
+      <span class="value" id="v-download">—</span>
+      <span class="unit" id="u-download"></span>
+    </article>
+    <article class="hero">
+      <span class="label">Upload</span>
+      <span class="value" id="v-upload">—</span>
+      <span class="unit" id="u-upload"></span>
+    </article>
+  </section>
+
+  <section class="tiles">
+    <article class="tile"><span class="label">Latency (unloaded)</span><span class="value" id="v-latency">—</span></article>
+    <article class="tile"><span class="label">Jitter</span><span class="value" id="v-jitter">—</span></article>
+    <article class="tile"><span class="label">Packet loss</span><span class="value" id="v-loss">—</span><span class="note" id="n-loss"></span></article>
+    <article class="tile"><span class="label">Latency during download</span><span class="value" id="v-dl-loaded">—</span><span class="note" id="n-dl-loaded"></span></article>
+    <article class="tile"><span class="label">Latency during upload</span><span class="value" id="v-ul-loaded">—</span><span class="note" id="n-ul-loaded"></span></article>
+    <article class="tile"><span class="label">Test duration</span><span class="value" id="v-duration">—</span></article>
+  </section>
+
+  <section class="card">
+    <h2>Network quality</h2>
+    <p class="muted">Scores use Cloudflare's AIM thresholds: latency, jitter, packet loss, throughput and latency increase under load.</p>
+    <p class="muted" id="aim-note"></p>
+    <div class="aim" id="aim">
+      <div class="aim-card" data-k="streaming"><span class="label">Video streaming</span><span class="badge">—</span><span class="pts"></span></div>
+      <div class="aim-card" data-k="gaming"><span class="label">Online gaming</span><span class="badge">—</span><span class="pts"></span></div>
+      <div class="aim-card" data-k="rtc"><span class="label">Video chatting</span><span class="badge">—</span><span class="pts"></span></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Latency over time</h2>
+    <div class="legend" id="legend-latency"></div>
+    <div class="chart" id="chart-latency"></div>
+  </section>
+
+  <section class="card">
+    <h2>Throughput by request size</h2>
+    <div class="legend" id="legend-throughput"></div>
+    <div class="chart" id="chart-throughput"></div>
+    <details>
+      <summary>Table view</summary>
+      <table id="table-sizes">
+        <thead><tr><th>Direction</th><th>Size</th><th>Requests</th><th>Min</th><th>Median</th><th>p90</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </details>
+  </section>
+
+  <section class="card two-col">
+    <div>
+      <h2>Connection</h2>
+      <dl class="kv" id="meta">
+        <dt>Your IP</dt><dd id="m-ip">—</dd>
+        <dt>Reverse DNS</dt><dd id="m-host">—</dd>
+        <dt>Server</dt><dd id="m-server">—</dd>
+        <dt>Protocol</dt><dd id="m-proto">—</dd>
+        <dt>Endpoint</dt><dd id="m-endpoint">—</dd>
+      </dl>
+    </div>
+    <div>
+      <h2>Results</h2>
+      <div class="actions">
+        <button id="copy-summary" type="button" disabled>Copy summary</button>
+        <button id="copy-json" type="button" disabled>Copy JSON</button>
+        <button id="download-json" type="button" disabled>Download JSON</button>
+        <button id="clear-history" type="button">Clear history</button>
+      </div>
+      <h3>History</h3>
+      <ol id="history" class="history"><li class="muted">No runs yet.</li></ol>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <p>Methodology follows <a href="https://github.com/cloudflare/speedtest" rel="noopener">cloudflare/speedtest</a>: sequential requests from 100 kB to 250 MB, p90 throughput, median latency, loaded latency sampled every 400 ms, 1000 UDP packets through a TURN loopback.</p>
+  </footer>
+</main>
+<div id="tooltip" class="tooltip" role="tooltip" hidden></div>
+</body>
+</html>

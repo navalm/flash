@@ -1,0 +1,12 @@
+.git
+.gitignore
+.dockerignore
+Dockerfile
+compose.yaml
+README.md
+Makefile
+flash
+bin/
+dist/
+.env
+*.test.mjs
