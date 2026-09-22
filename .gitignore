@@ -1,0 +1,5 @@
+/flash
+/bin/
+/dist/
+.env
+*.test

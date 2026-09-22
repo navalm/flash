@@ -1,0 +1,33 @@
+# flash speed test — plain Docker Compose, no reverse proxy required.
+# Set TURN_PUBLIC_IP in .env to an IP address browsers can reach this host on
+# (your LAN IP, or a VPS's public IP); it's advertised to the browser for the
+# TURN packet-loss relay. See .env.example.
+services:
+  web:
+    build: .
+    image: flash:local
+    ports:
+      - "${HOST_PORT:-8080}:8080"
+      # TURN relay for the packet-loss test.
+      - "${TURN_PORT:-3478}:3478/udp"
+      - "49160-49200:49160-49200/udp"
+    environment:
+      PORT: "8080"
+      BASE_PATH: "${BASE_PATH:-}"
+      SERVER_NAME: "${SERVER_NAME:-}"
+      MAX_BYTES: "${MAX_BYTES:-1000000000}"
+      # Set true if this sits behind your own reverse proxy that sets
+      # X-Forwarded-For / X-Real-IP; leave false for direct exposure.
+      TRUSTED_PROXY: "${TRUSTED_PROXY:-false}"
+      TURN_PUBLIC_IP: "${TURN_PUBLIC_IP:?set TURN_PUBLIC_IP in .env to an IP browsers can reach this host on}"
+      TURN_PORT: "3478"
+      TURN_RELAY_MIN_PORT: "49160"
+      TURN_RELAY_MAX_PORT: "49200"
+    restart: unless-stopped
+    healthcheck:
+      # Distroless image has no curl; the binary probes itself.
+      test: ["CMD", "/flash", "-healthcheck"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
